@@ -1,0 +1,97 @@
+.payment-container-custom {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+	background: url('/Users/lachitha/Desktop/Brands-Wear/client/src/views/img/frockbg.jpg') no-repeat center center fixed;
+	background-size: cover;
+	
+  }
+  
+  .payment-page-custom {
+	background: rgba(255, 255, 255, 0.8);
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	max-width: 700px;
+	width: 100%;
+	border: 1px solid #7A5DCC;
+  }
+  
+  .form-title-custom {
+	font-size: 2rem;
+	margin-bottom: 20px;
+	text-align: left;
+	color: black;
+  }
+  
+  .payment-content-custom {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+  }
+  
+  .payment-methods-custom {
+	flex: 1;
+	margin-right: 20px;
+  }
+  
+  .payment-option-custom {
+	display: flex;
+	align-items: center;
+	margin-bottom: 15px;
+	font-size: 1.3rem;
+  }
+  
+  .payment-icon-custom {
+	margin-left: 10px;
+	font-size: 2rem;
+  }
+  
+  .card-options-custom {
+	margin-left: 40px;
+	display: flex;
+	gap: 50px;
+	margin-top: 20px;
+	font-size: 1.2rem;
+  }
+  
+  .image-container-custom {
+	flex: 1;
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: 40px;
+	margin-right: 40px;
+	margin-left: 40px;
+  }
+  
+  .payment-image-custom {
+	max-width: 200px;
+	height: auto;
+  }
+  
+  .confirm-button-custom {
+	width: 100%;
+	padding: 15px;
+	background-color: #9370db;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	font-size: 1.2rem;
+	cursor: pointer;
+  }
+  
+  .confirm-button-custom:hover {
+	background-color: #7a5dcc;
+  }
+
+  .header {
+    position: fixed; /* Fixes the header to the top of the screen */
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff; /* Background color to ensure visibility */
+    z-index: 1000; /* Ensures the header is above other content */
+    
+}
+  
