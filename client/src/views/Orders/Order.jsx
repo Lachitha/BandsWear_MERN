@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import Navigation from "../Navigate";
-import backgroudimg from "/Users/lachitha/Desktop/Brands-Wear/client/src/views/img/frockbg.jpg";
+import backgroundimg from "/Users/lachitha/Desktop/Brands-Wear/client/src/views/img/frockbg.jpg"; // Correct path
 
 const Orders = () => {
 	const [orders, setOrders] = useState([]);
@@ -39,7 +39,6 @@ const Orders = () => {
 	const generatePDF = (order) => {
 		const doc = new jsPDF();
 
-		// Add Store name at the top with custom style
 		doc.setFontSize(30);
 		doc.setTextColor("#6c63ff");
 		doc.setFont("Helvetica", "bold");
@@ -48,19 +47,17 @@ const Orders = () => {
 		const title = `Invoice for Order ID: ${order._id}`;
 		const date = new Date(order.orderDate).toLocaleString();
 
-		// Add title and date
 		doc.setFontSize(22);
 		doc.setTextColor("#000000");
 		doc.setFont("Helvetica", "bold");
-		doc.text(title, 14, 40); // Positioned below the store name
+		doc.text(title, 14, 40);
 		doc.setFontSize(12);
 		doc.setFont("Helvetica", "normal");
 		doc.text(`Order Date: ${date}`, 14, 50);
 		doc.text(`Total Price: Rs ${order.totalPrice}`, 14, 60);
 		doc.setDrawColor(0);
-		doc.line(14, 63, 196, 63); // Draw a line
+		doc.line(14, 63, 196, 63);
 
-		// Prepare data for the table
 		const tableData = order.products.map((product) => [
 			product.itemName,
 			product.quantity,
@@ -68,7 +65,6 @@ const Orders = () => {
 			`Rs ${product.quantity * product.unitPrice}`,
 		]);
 
-		// Define table columns
 		const tableColumns = [
 			"Product Name",
 			"Quantity",
@@ -76,7 +72,6 @@ const Orders = () => {
 			"Total Price",
 		];
 
-		// Create the table
 		doc.autoTable({
 			head: [tableColumns],
 			body: tableData,
@@ -84,7 +79,7 @@ const Orders = () => {
 			margin: { horizontal: 14 },
 			theme: "striped",
 			headStyles: {
-				fillColor: "#6c63ff", // Store's theme color
+				fillColor: "#6c63ff",
 				textColor: "#fff",
 				fontSize: 12,
 			},
@@ -144,7 +139,6 @@ const Orders = () => {
 			],
 		});
 
-		// Optional: Add footer notes
 		doc.setFontSize(10);
 		doc.setFont("Helvetica", "normal");
 		doc.text(
@@ -158,7 +152,6 @@ const Orders = () => {
 			doc.autoTable.previous.finalY + 15
 		);
 
-		// Save the PDF
 		doc.save(`invoice_${order._id}.pdf`);
 	};
 
@@ -173,11 +166,20 @@ const Orders = () => {
 	return (
 		<div
 			style={{
+				minHeight: "100vh", // Ensures the div takes up the whole window
+				backgroundImage: `url(${backgroundimg})`,
+				backgroundSize: "cover",
+				backgroundPosition: "center",
+				backgroundRepeat: "no-repeat",
 				fontFamily: "Arial, sans-serif",
 				padding: "50px",
-				maxWidth: "1000px",
+				maxWidth: "1500px",
 				margin: "0 auto",
-				marginTop: "90px", // Added to prevent content from being hidden behind the fixed header
+				marginTop: "90px",
+				display: "flex", // Use flexbox to center content
+				flexDirection: "column",
+				alignItems: "center",
+				justifyContent: "center", // Center the content vertically
 			}}>
 			<header
 				style={{
@@ -187,8 +189,7 @@ const Orders = () => {
 					right: 0,
 					backgroundColor: "#fff",
 					zIndex: 1000,
-
-					boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)", // Optional shadow for better visibility
+					boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
 				}}>
 				<Navigation /> {/* Add the Navigation component here */}
 			</header>
@@ -198,13 +199,12 @@ const Orders = () => {
 					marginBottom: "40px",
 					textAlign: "center",
 					color: "#4a4a4a",
-					fontSize: "28px", // Increased font size
-					fontWeight: "bold", // Make it bold
-					textTransform: "uppercase", // Transform text to uppercase
-					// backgroundColor: "#f0f0f0", // Add background color for the title
-					padding: "10px", // Padding for aesthetics
-					borderRadius: "10px", // Rounded corners for the background
-					// boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)", // Shadow for the title
+					fontSize: "28px",
+					fontWeight: "bold",
+					textTransform: "uppercase",
+					padding: "10px",
+					borderRadius: "10px",
+					backgroundColor: "rgba(255, 255, 255, 0.8)", // Light background for header
 				}}>
 				Your Orders
 			</h1>
@@ -214,13 +214,14 @@ const Orders = () => {
 				<div
 					style={{
 						height: "550px",
+						width: "900px",
 						overflowY: "auto",
 						border: "2px solid #ddd",
 						borderRadius: "10px",
 						boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)",
 						padding: "20px",
 						marginBottom: "10px",
-						background: "pgimg",
+						backgroundColor: "rgba(255, 255, 255, 0.8)", // Light background for readability
 					}}>
 					<div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
 						{orders.map((order) => (
@@ -233,7 +234,7 @@ const Orders = () => {
 									padding: "20px",
 									boxShadow: "0 4px 8px rgba(0, 0, 0, 0.8)",
 									backgroundColor: "#fff",
-									width: "calc(100% - 10px)", // Adjust width as needed
+									width: "calc(100% - 10px)",
 								}}>
 								<h5
 									style={{
