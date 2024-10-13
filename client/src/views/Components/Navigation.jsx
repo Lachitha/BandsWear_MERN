@@ -11,17 +11,17 @@ function Navigation() {
       {/* Navigation Bar */}
       <div className='flex justify-between items-center h-auto bg-[#D9D9D9] pl-40 pr-40'>
         {/* Left side: Logo */}
-        <div className='flex items-center'>
+        <Link to='/'><div className='flex items-center'>
           <img src={Logo} alt="Logo" className='h-16 m-5' />
-        </div>
+        </div></Link>
 
         {/* Center: Navigation Buttons */}
         <div className='flex items-center space-x-2 text-xl font-thin'>
           <Link to={`/SupplierProduct/${userId}`}><button>Home</button></Link>
           <span>&nbsp;|&nbsp;</span>
-          <Link to='/OrderNotification'><button>Order Items</button></Link>
+          <Link to={`/OrderNotification/${userId}`}><button>Order Items</button></Link>
           <span>&nbsp;|&nbsp;</span>
-          <Link to={`/GenerateReport/${userId}`}><button>Sales Report</button></Link> {/* Use template literal */}
+          <Link to={`/GenerateReport/${userId}`}><button>Accepted Order</button></Link> {/* Use template literal */}
         </div>
         
         {/* Right side: User Icon */}

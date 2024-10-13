@@ -11,7 +11,7 @@ function AdminAddItem() {
   const [availability, setAvailability] = useState("Available");
   const [price, setPrice] = useState(""); 
   const [itemCode, setItemCode] = useState(""); 
-  const [imgUrl, setImageUrl] = useState(""); // State for image URL
+  const [imgUrl, setImageUrl] = useState(""); 
   const [previousCodes, setPreviousCodes] = useState(new Set());
 
   // Individual states for sizes
@@ -30,16 +30,31 @@ function AdminAddItem() {
     setPreviousCodes(prev => new Set(prev).add(code));
   };
 
+  const validatePrice = () => {
+    // Check if the price is a positive number and a valid number format
+    const priceValue = parseFloat(price);
+    if (isNaN(priceValue) || priceValue <= 0) {
+      toast.error('Please enter a valid price greater than 0.');
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     
+    // Validate price before submitting
+    if (!validatePrice()) {
+      return; // If validation fails, stop the submission
+    }
+
     const itemData = {
       category,
       price,
       availability,
       itemCode,
       itemName,
-      imgUrl, // Include imageUrl in itemData
+      imgUrl, 
       small,
       medium,
       large,
@@ -116,7 +131,6 @@ function AdminAddItem() {
               <div>
                 <label className="block text-gray-600 mb-2 text-center">Size and Quantity</label>
                 <div className="flex justify-between mb-4">
-                  {/* Small Size Input */}
                   <div className="flex flex-col items-center">
                     <label className="block text-gray-600 mb-1" htmlFor="quantity-S">Small</label>
                     <input
@@ -129,7 +143,6 @@ function AdminAddItem() {
                     />
                   </div>
 
-                  {/* Medium Size Input */}
                   <div className="flex flex-col items-center">
                     <label className="block text-gray-600 mb-1" htmlFor="quantity-M">Medium</label>
                     <input
@@ -142,7 +155,6 @@ function AdminAddItem() {
                     />
                   </div>
 
-                  {/* Large Size Input */}
                   <div className="flex flex-col items-center">
                     <label className="block text-gray-600 mb-1" htmlFor="quantity-L">Large</label>
                     <input
@@ -155,7 +167,6 @@ function AdminAddItem() {
                     />
                   </div>
 
-                  {/* Extra Large Size Input */}
                   <div className="flex flex-col items-center">
                     <label className="block text-gray-600 mb-1" htmlFor="quantity-XL">Extra Large</label>
                     <input
@@ -171,7 +182,7 @@ function AdminAddItem() {
               </div>
 
               <div>
-                <label className="block text-gray-600 mb-2" htmlFor="price">Price</label>
+                <label className="block text-gray-600 mb-2" htmlFor="price">Price (LKR)</label>
                 <input 
                   type="text" 
                   id="price" 
@@ -187,7 +198,7 @@ function AdminAddItem() {
                   type="text" 
                   id="imageUrl" 
                   value={imgUrl}
-                  onChange={(e) => setImageUrl(e.target.value)} // Handle image URL change
+                  onChange={(e) => setImageUrl(e.target.value)} 
                   className="w-[20rem] p-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600" 
                 />
               </div>

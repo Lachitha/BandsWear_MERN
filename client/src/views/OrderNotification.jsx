@@ -1,53 +1,123 @@
-import React from 'react';
-import Navigation from './Components/Navigation'; // Ensure you have this component
-import Footer from './Components/Footer'; // Ensure you have this component
-import sampleImage from '../Images/sample-image1.jpeg'; // Replace with the actual image path
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import React, { useState, useEffect } from 'react';
+import Navigation from './Components/Navigation';
+import Footer from './Components/Footer';
+import axios from 'axios';
+import { Link, useParams } from 'react-router-dom';
 
-function OrderNotification() {
-  const navigate = useNavigate(); // Initialize useNavigate
+const ShowOrders = () => {
+    const [orders, setOrders] = useState([]);
+    const { userId } = useParams();
 
-  // Function to handle accepting the order
-  const handleAcceptOrder = () => {
-    navigate('/AcceptAdminOrder'); // Navigate to the AcceptAdminOrder page
-  };
+    useEffect(() => {
+        axios.get('http://localhost:3001/showOrders')
+            .then(response => {
+                // Sort orders by createdAt in descending order
+                const sortedOrders = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                setOrders(sortedOrders);
+            })
+            .catch(error => {
+                console.error("Error fetching orders:", error);
+            });
+    }, []);
 
-  return (
-    <div className='min-h-screen flex flex-col'>
-      <Navigation />
+    if (orders.length === 0) return <div>Loading...</div>;
 
-      {/* Main Content */}
-      <div className="flex-grow flex justify-center items-center p-8">
-        <div className="max-w-3xl w-full bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-2xl font-bold mb-4">Order Items</h2>
-          
-          {/* Order Details */}
-          <div className="flex mb-6">
-            <img className="w-32 h-32 rounded-md object-cover mr-4" src={sampleImage} alt="Ordered Item" />
-            <div className="flex-1">
-              <div className="text-lg font-semibold mb-2">Category: Party frocks</div>
-              <div className="text-sm mb-2">Quantity: 30</div>
-              <div className="text-sm mb-2">Size: S</div>
-              <div className="text-sm mb-2">Date Needed: 2024.08.25</div>
-            </div>
-          </div>
+    const handleAccept = (orderId) => {
+        console.log(`Accepted order ID: ${orderId}`);
+    };
 
-          {/* Action Buttons */}
-          <div className="flex justify-around mt-6">
-            <button 
-              className="bg-purple-500 text-white px-4 py-2 rounded-md"
-              onClick={handleAcceptOrder} // Set the click handler
-            >
-              Accept Order
-            </button>
-            <button className="bg-red-500 text-white px-4 py-2 rounded-md">Reject Order</button>
-          </div>
+    const handleReject = (orderId) => {
+        setOrders(orders.filter(order => order._id !== orderId));
+        console.log(`Rejected order ID: ${orderId}`);
+    };
+
+    return (
+        <div className="flex flex-col min-h-screen">
+            <Navigation />
+            <main className="flex-grow container mx-auto p-4">
+                <h2 className="text-4xl font-thin mt-10 mb-10">Order Details</h2>
+                <div className="flex flex-col items-center"> 
+                    {orders.map((order) => (
+                        <div
+                            key={order._id}
+                            className="border border-purple-400 w-[70rem] p-10 mb-4 rounded shadow-md"
+                        >
+                            <div className="flex flex-col text-start">
+                                <div className="flex flex-row">
+                                    <div className="flex flex-col ml-10">                            
+                                        <div>
+                                            <span className="text-xl font-thin">Item Name:</span>
+                                            <p className="text-2xl">{order.itemName}</p>
+                                        </div>
+                                        <div className="mt-5">
+                                            <span className="text-xl font-thin mt-10">Item Code:</span>
+                                            <p className="text-2xl">{order.itemCode}</p>
+                                        </div>
+                                        <div className="mt-5">
+                                            <span className="text-xl font-thin mt-10">Category:</span>
+                                            <p className="text-2xl">{order.category}</p>
+                                        </div>
+                                        <div className="mt-5">
+                                            <span className="text-xl font-thin">Small:</span>
+                                            <p className="text-2xl">{order.small}</p>
+                                        </div>
+                                        <div className="mt-5">
+                                            <span className="text-xl font-thin">Medium:</span>
+                                            <p className="text-2xl">{order.medium}</p>
+                                        </div>
+                                        <div className="mt-5">
+                                            <span className="text-xl font-thin">Large:</span>
+                                            <p className="text-2xl">{order.large}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col ml-[20rem]">
+                                        <div>
+                                            <span className="text-xl font-thin">Extra Large:</span>
+                                            <p className="text-2xl">{order.extraLarge}</p>
+                                        </div>
+                                        <div className="mt-5">
+                                            <span className="text-xl font-thin">Total Quantity:</span>
+                                            <p className="text-2xl">{order.quantity}</p>
+                                        </div>
+                                        <div className="mt-5">
+                                            <span className="text-xl font-thin">Created At:</span>
+                                            <p className="text-2xl">{new Date(order.createdAt).toLocaleString()}</p>
+                                        </div>
+                                        <div className="mt-5">
+                                            <span className="text-xl font-thin">Updated At:</span>
+                                            <p className="text-2xl">{new Date(order.updatedAt).toLocaleString()}</p>
+                                        </div>
+                                        <div className="mt-5 mb-10">
+                                            <span className="text-xl font-thin ">Needed At:</span>
+                                            <p className="text-2xl">{new Date(order.neededDate).toLocaleString()}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-center mt-4">
+                                <Link to={`/AcceptAdminOrder/${order._id}/${userId}`}>
+                                    <button
+                                        onClick={() => handleAccept(order._id)}
+                                        className="bg-green-500 text-white px-4 py-2 w-40 h-16 text-xl rounded mr-2 hover:bg-white border hover:border-green-500 hover:text-green-500 transition"
+                                    >
+                                        Accept
+                                    </button>
+                                </Link>
+                                <button
+                                    onClick={() => handleReject(order._id)}
+                                    className="bg-red-500 text-white px-4 py-2 w-40 h-16 text-xl rounded mr-2 hover:bg-white border hover:border-red-500 hover:text-red-500 transition"
+                                >
+                                    Reject
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </main>
+            <Footer />
         </div>
-      </div>
+    );
+};
 
-      <Footer />
-    </div>
-  );
-}
-
-export default OrderNotification;
+export default ShowOrders;

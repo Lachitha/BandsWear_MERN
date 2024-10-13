@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import Navigation from "../Navigate";
-import backgroundimg from "/Users/lachitha/Desktop/Brands-Wear/client/src/views/img/frockbg.jpg"; // Correct path
-
+import backgroundimg from "../img/frockbg.jpg"; 
 const Orders = () => {
 	const [orders, setOrders] = useState([]);
 	const [error, setError] = useState(null);

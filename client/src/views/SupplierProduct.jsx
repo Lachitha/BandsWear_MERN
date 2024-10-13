@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link, useParams } from 'react-router-dom';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable'; // For automatic table generation
 import Navigation from './Components/Navigation';
 import Footer from './Components/Footer';
-import { Link, useParams } from 'react-router-dom';
 
 function SupplierProduct() {
   const [products, setProducts] = useState([]); // State to hold the product data
@@ -38,6 +40,36 @@ function SupplierProduct() {
     }
   };
 
+  // Function to generate PDF report
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    doc.text('Supplier Products Report', 14, 16);
+    
+    // Create table data
+    const tableData = products.map(product => [
+      product.itemCode,
+      product.itemName,
+      product.small,
+      product.medium,
+      product.large,
+      product.extraLarge,
+      product.Price,
+    ]);
+
+    // Define columns
+    const columns = ["Item Code", "Item Name", "Small", "Medium", "Large", "Extra Large", "Price"];
+    
+    // Add autoTable
+    doc.autoTable({
+      head: [columns],
+      body: tableData,
+      startY: 20,
+    });
+
+    // Save the PDF
+    doc.save('Supplier_Products_Report.pdf');
+  };
+
   if (loading) {
     return <div>Loading products...</div>; // Simple loading message
   }
@@ -47,6 +79,16 @@ function SupplierProduct() {
       <Navigation />
       
       {/* Main Content */}
+       {/* Add Item Button */}
+       <div className="flex justify-center mt-8">
+            <Link to={`/AddItem/${userId}`}><button className="bg-purple-500 text-white px-8 py-3 rounded-lg">Add item</button></Link>
+          </div>
+          
+          {/* Generate Report Button */}
+          <div className="flex justify-center mt-8">
+            <button onClick={generatePDF} className="bg-green-500 text-white px-8 py-3 rounded-lg">Generate Report PDF</button>
+          </div>
+
       <div className="flex-grow flex justify-center items-center p-8">
         <div className="max-w-5xl w-full">
           {products.length === 0 ? (
@@ -57,12 +99,13 @@ function SupplierProduct() {
                 <img className="w-32 h-32 rounded-md object-cover mr-4" src={product.imageURL || 'placeholder.jpg'} alt={product.itemName} />
                 <div className="flex-1">
                   <div className="text-lg font-semibold mb-2">Category: {product.Category}</div>
+                  <div className="text-sm mb-4">Item Code: {product.itemCode}</div>
+                  <div className="text-sm mb-4">Item Name: {product.itemName}</div>
                   <div className="text-sm mb-2">Small: {product.small}</div>
                   <div className="text-sm mb-2">Medium: {product.medium}</div>
                   <div className="text-sm mb-2">Large: {product.large}</div>
                   <div className="text-sm mb-2">Extra Large: {product.extraLarge}</div>
                   <div className="text-sm mb-2">Price: LKR {product.Price}</div>
-                  <div className="text-sm mb-4">Item Code: {product.itemCode}</div>
                   <div className="flex space-x-4">
                     {/* Link to UpdateItem Page */}
                     <Link to={`/UpdateItem/${product._id}`}>
@@ -80,10 +123,7 @@ function SupplierProduct() {
             ))
           )}
 
-          {/* Add Item Button */}
-          <div className="flex justify-center mt-8">
-            <Link to={`/AddItem/${userId}`}><button className="bg-purple-500 text-white px-8 py-3 rounded-lg">Add item</button></Link>
-          </div>
+         
         </div>
       </div>
 

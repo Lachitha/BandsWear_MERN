@@ -5,7 +5,7 @@ const Supplier = require("../models/Supplier");
 const User = require("../models/User");
 
 // Login route
-router.post("/login", async (req, res) => {
+router.post("/loginc", async (req, res) => {
 	const { email, password } = req.body;
 
 	try {
@@ -15,6 +15,7 @@ router.post("/login", async (req, res) => {
 			if (password === admin.password) {
 				// Plain-text password comparison
 				req.session.userId = admin._id; // Set session user ID
+				req.session.username = admin.username; // Save admin username in session
 				req.session.userRole = "admin"; // Optionally store role for additional checks
 				console.log(
 					`Admin login successful. UserID stored in session: ${req.session.userId}`
@@ -31,6 +32,7 @@ router.post("/login", async (req, res) => {
 			if (password === supplier.password) {
 				// Plain-text password comparison
 				req.session.userId = supplier._id; // Set session user ID
+				req.session.username = supplier.username; // Save supplier username in session
 				req.session.userRole = "supplier"; // Store role for additional checks
 				console.log(
 					`Supplier login successful. UserID stored in session: ${req.session.userId}`
@@ -51,13 +53,18 @@ router.post("/login", async (req, res) => {
 			if (password === user.password) {
 				// Plain-text password comparison
 				req.session.userId = user._id; // Set session user ID
+				req.session.username = user.username; // Save username in session
 				req.session.userRole = "user"; // Store role for additional checks
 				console.log(
-					`User login successful. UserID stored in session: ${req.session.userId}`
+					`User login successful. UserID stored in session: ${req.session.username}`
 				);
 				return res
 					.status(203)
-					.json({ message: "User login successful", userId: user._id });
+					.json({
+						message: "User login successful",
+						userId: user._id,
+						username: user.username,
+					});
 			} else {
 				return res.status(401).json({ message: "Invalid user credentials" });
 			}

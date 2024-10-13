@@ -60,56 +60,26 @@ router.delete("/deleteProduct/:productId", (req, res) => {
 });
 
 // Backend route to get products by userId
-router.get("/showSupplierProductsbyuserId/:userId", (req, res) => {
-    const userId = req.params.userId; // Use userId instead of itemId
-
-    Product.find({ userId: userId }) // Assuming supplierId field links the product to a supplier
-        .then(products => {
-            if (!products) {
-                return res.status(404).json({ error: 'Products not found' });
-            }
-            res.json(products);
-        })
-        .catch(err => res.status(500).json({ error: 'Failed to fetch products', details: err }));
-});
-
-router.get("/calcMonthlyQuantity/:userId", async (req, res) => {
+router.get("/showSupplierProductsbyuserId/:userId", async (req, res) => {
     const userId = req.params.userId;
 
     try {
-        // Fetch products for the given userId
+        // Find all products associated with the userId
         const products = await Product.find({ userId: userId });
 
-        if (!products.length) {
-            return res.status(404).json({ error: 'No products found for this user' });
+        // Check if products were found
+        if (products.length === 0) {
+            return res.status(404).json({ message: "No products found for this user." });
         }
 
-        // Initialize a map to aggregate quantities by itemCode
-        const quantityMap = {};
-
-        // Aggregate quantities for each product
-        products.forEach(product => {
-            const itemCode = product.itemCode;
-            if (!quantityMap[itemCode]) {
-                quantityMap[itemCode] = { 
-                    itemCode, 
-                    small: 0, 
-                    medium: 0, 
-                    large: 0, 
-                    extraLarge: 0 
-                };
-            }
-            quantityMap[itemCode].small += parseInt(product.small) || 0;
-            quantityMap[itemCode].medium += parseInt(product.medium) || 0;
-            quantityMap[itemCode].large += parseInt(product.large) || 0;
-            quantityMap[itemCode].extraLarge += parseInt(product.extraLarge) || 0;
-        });
-
-        res.json(Object.values(quantityMap)); // Send the aggregated results
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch products', details: err });
+        // Send the found products as a response
+        res.status(200).json(products);
+    } catch (error) {
+        console.error("Error fetching supplier products:", error);
+        res.status(500).json({ message: "Internal server error." });
     }
 });
+
 
 
 

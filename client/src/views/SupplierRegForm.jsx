@@ -19,17 +19,19 @@ function SupplierRegForm() {
 
   const validateForm = () => {
     const newErrors = {};
-    const phoneRegex = /^\d{10}$/; // Regular expression to match exactly 10 digits
+    const nameRegex = /^[A-Za-z]+$/; // Regex for letters only
+    const phoneRegex = /^0\d{9}$/; // Regex to match exactly 10 digits starting with 0
 
     if (!company) newErrors.company = 'Company name is required.';
     if (!firstname) newErrors.firstname = 'First name is required.';
+    else if (!nameRegex.test(firstname)) newErrors.firstname = 'First name must contain only letters.';
     if (!lastname) newErrors.lastname = 'Last name is required.';
+    else if (!nameRegex.test(lastname)) newErrors.lastname = 'Last name must contain only letters.';
     if (!email) newErrors.email = 'Email is required.';
     if (!contact) newErrors.contact = 'Contact number is required.';
-    else if (!phoneRegex.test(contact)) newErrors.contact = 'Contact number must be exactly 10 digits.';
-    if (!address) newErrors.address = 'Address is required.';
+    else if (!phoneRegex.test(contact)) newErrors.contact = 'Contact number must be 10 digits and start with 0.';
     if (!password) newErrors.password = 'Password is required.';
-    else if (password.length > 8) newErrors.password = 'Password cannot be more than 8 characters.'; // Added validation for max 8 characters
+    else if (password.length !== 8) newErrors.password = 'Password must be exactly 8 characters.'; // Corrected validation
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0; // Return true if there are no errors
@@ -47,7 +49,7 @@ function SupplierRegForm() {
         email,
         contact,
         address,
-        password // Include password in the POST request
+        password, // Include password in the POST request
       });
 
       console.log('Supplier registered:', response.data);
@@ -90,7 +92,9 @@ function SupplierRegForm() {
                   Supplier Company Name
                 </label>
                 <input
-                  className={`w-full p-3 rounded border transition-all duration-300 ${errors.company ? 'bg-red-100' : 'bg-gray-200'} focus:bg-gray-300 hover:border-black`}
+                  className={`w-full p-3 rounded border transition-all duration-300 ${
+                    errors.company ? 'bg-red-100' : 'bg-gray-200'
+                  } focus:bg-gray-300 hover:border-black`}
                   type="text"
                   id="company"
                   placeholder="Enter your company name"
@@ -104,7 +108,9 @@ function SupplierRegForm() {
                   First Name
                 </label>
                 <input
-                  className={`w-full p-3 rounded border transition-all duration-300 ${errors.firstname ? 'bg-red-100' : 'bg-gray-200'} focus:bg-gray-300 hover:border-black`}
+                  className={`w-full p-3 rounded border transition-all duration-300 ${
+                    errors.firstname ? 'bg-red-100' : 'bg-gray-200'
+                  } focus:bg-gray-300 hover:border-black`}
                   type="text"
                   id="firstname"
                   placeholder="Enter your first name"
@@ -118,7 +124,9 @@ function SupplierRegForm() {
                   Last Name
                 </label>
                 <input
-                  className={`w-full p-3 rounded border transition-all duration-300 ${errors.lastname ? 'bg-red-100' : 'bg-gray-200'} focus:bg-gray-300 hover:border-black`}
+                  className={`w-full p-3 rounded border transition-all duration-300 ${
+                    errors.lastname ? 'bg-red-100' : 'bg-gray-200'
+                  } focus:bg-gray-300 hover:border-black`}
                   type="text"
                   id="lastname"
                   placeholder="Enter your last name"
@@ -132,7 +140,9 @@ function SupplierRegForm() {
                   Email
                 </label>
                 <input
-                  className={`w-full p-3 rounded border transition-all duration-300 hover:border-black ${errors.email ? 'bg-red-100' : 'bg-gray-200'} focus:bg-gray-300 hover:border-black`}
+                  className={`w-full p-3 rounded border transition-all duration-300 hover:border-black ${
+                    errors.email ? 'bg-red-100' : 'bg-gray-200'
+                  } focus:bg-gray-300 hover:border-black`}
                   type="email"
                   id="email"
                   placeholder="Enter your email"
@@ -146,7 +156,9 @@ function SupplierRegForm() {
                   Contact Number
                 </label>
                 <input
-                  className={`w-full p-3 rounded border transition-all duration-300 ${errors.contact ? 'bg-red-100' : 'bg-gray-200'} focus:bg-gray-300 hover:border-black`}
+                  className={`w-full p-3 rounded border transition-all duration-300 ${
+                    errors.contact ? 'bg-red-100' : 'bg-gray-200'
+                  } focus:bg-gray-300 hover:border-black`}
                   type="text"
                   id="contact"
                   placeholder="Enter your contact number"
@@ -160,21 +172,22 @@ function SupplierRegForm() {
                   Address
                 </label>
                 <input
-                  className={`w-full mb-10 p-3 rounded border transition-all duration-300 ${errors.address ? 'bg-red-100' : 'bg-gray-200'} focus:bg-gray-300 hover:border-black`}
+                  className="w-full mb-10 p-3 rounded border transition-all duration-300 bg-gray-200 focus:bg-gray-300 hover:border-black"
                   type="text"
                   id="address"
                   placeholder="Enter your address"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                 />
-                {errors.address && <p className="text-red-500 text-xs">{errors.address}</p>}
               </div>
               <div>
                 <label className="block text-black text-xl mb-5" htmlFor="password">
                   Password
                 </label>
                 <input
-                  className={`w-full p-3 rounded border transition-all duration-300 ${errors.password ? 'bg-red-100' : 'bg-gray-200'} focus:bg-gray-300 hover:border-black`}
+                  className={`w-full p-3 rounded border transition-all duration-300 ${
+                    errors.password ? 'bg-red-100' : 'bg-gray-200'
+                  } focus:bg-gray-300 hover:border-black`}
                   type="password"
                   id="password"
                   placeholder="Enter your password"

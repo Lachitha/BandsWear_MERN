@@ -15,7 +15,8 @@ const UserForm = () => {
   });
 
   const [errors, setErrors] = useState({
-    contactNumber: ''
+    username: '',
+    contactNumber: '',
   });
 
   const navigate = useNavigate(); // Call useNavigate
@@ -23,6 +24,15 @@ const UserForm = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    // Username validation to ensure only letters
+    if (name === 'username') {
+      if (/[^a-zA-Z\s]/.test(value)) {
+        setErrors({ ...errors, username: 'Username can only contain letters and spaces' });
+      } else {
+        setErrors({ ...errors, username: '' });
+      }
+    }
 
     // Contact number validation
     if (name === 'contactNumber') {
@@ -36,7 +46,7 @@ const UserForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (errors.contactNumber === '') {
+    if (errors.contactNumber === '' && errors.username === '') {
       // Axios POST request to the backend
       axios.post('http://localhost:3001/createUser', formData)
         .then(response => {
@@ -78,6 +88,9 @@ const UserForm = () => {
                       onChange={handleInputChange}
                       required
                     />
+                    {errors.username && (
+                      <p className="text-red-500 text-sm mt-2">{errors.username}</p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-black text-xl mb-4" htmlFor="email">Email Address</label>
@@ -132,6 +145,7 @@ const UserForm = () => {
                   <button
                     className="w-[20rem] bg-purple-400 hover:bg-purple-700 text-black hover:text-white py-3 rounded-lg text-center font-semibold transition duration-300 ease-in-out transform hover:scale-105"
                     type="submit"
+                    disabled={errors.username || errors.contactNumber} // Disable button if there's an error
                   >
                     Create
                   </button>

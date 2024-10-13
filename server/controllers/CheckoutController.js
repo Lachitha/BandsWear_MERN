@@ -49,40 +49,40 @@ router.post("/register", async (req, res) => {
 });
 
 // Login a user
-router.post("/login", async (req, res) => {
-	const { email, password } = req.body;
+// router.post("/login", async (req, res) => {
+// 	const { email, password } = req.body;
 
-	try {
-		// Find user by email
-		const user = await User.findOne({ email });
-		if (!user) {
-			return res.status(404).json({ message: "User not found" });
-		}
+// 	try {
+// 		// Find user by email
+// 		const user = await User.findOne({ email });
+// 		if (!user) {
+// 			return res.status(404).json({ message: "User not found" });
+// 		}
 
-		// Compare the entered password with the stored hashed password
-		const isMatch = await user.comparePassword(password); // Assuming comparePassword function exists in your model
-		if (!isMatch) {
-			return res.status(401).json({ message: "Invalid credentials" });
-		}
+// 		// Compare the entered password with the stored hashed password
+// 		const isMatch = await user.comparePassword(password); // Assuming comparePassword function exists in your model
+// 		if (!isMatch) {
+// 			return res.status(401).json({ message: "Invalid credentials" });
+// 		}
 
-		// Store the userId in the session
-		req.session.userId = user._id;
+// 		// Store the userId in the session
+// 		req.session.userId = user._id;
 
-		// Return the user data (optional)
-		res.status(200).json({
-			message: "Login successful",
-			userId: user._id,
-			user: {
-				email: user.email,
-				firstName: user.firstName,
-				lastName: user.lastName,
-			},
-		});
-	} catch (err) {
-		console.error("Login error:", err); // Log the error for debugging
-		res.status(500).json({ message: "Server error", error: err.message });
-	}
-});
+// 		// Return the user data (optional)
+// 		res.status(200).json({
+// 			message: "Login successful",
+// 			userId: user._id,
+// 			user: {
+// 				email: user.email,
+// 				firstName: user.firstName,
+// 				lastName: user.lastName,
+// 			},
+// 		});
+// 	} catch (err) {
+// 		console.error("Login error:", err); // Log the error for debugging
+// 		res.status(500).json({ message: "Server error", error: err.message });
+// 	}
+// });
 
 // Route to fetch user details by userId
 router.get("/user-details/:userId", async (req, res) => {
@@ -122,7 +122,9 @@ router.get("/user-details", async (req, res) => {
 			return res.status(401).json({ message: "Unauthorized" });
 		}
 
-		const user = await User.findById(userId).select("email"); // Fetch only the email field
+		const user = await User.findById(userId).select(
+			"email firstName lastName address postalCode phoneNumber"
+		);
 
 		if (!user) {
 			return res.status(404).json({ message: "User not found" });
@@ -131,6 +133,7 @@ router.get("/user-details", async (req, res) => {
 		// Send only the email to auto-fill the form
 		res.json({
 			email: user.email,
+			address: user.address,
 		});
 	} catch (err) {
 		res.status(500).json({
@@ -149,13 +152,15 @@ router.post("/save-checkout", async (req, res) => {
 			return res.status(401).json({ message: "Unauthorized" });
 		}
 
-		const { firstName, lastName, address, postalCode, phoneNumber } = req.body;
+		const { email, firstName, lastName, address, postalCode, phoneNumber } =
+			req.body;
 
 		// Check if a checkout already exists for this user
 		const existingCheckout = await Checkout.findOne({ userId });
 
 		if (existingCheckout) {
 			// Update existing checkout without changing the email
+			existingCheckout.email = email;
 			existingCheckout.firstName = firstName;
 			existingCheckout.lastName = lastName;
 			existingCheckout.address = address;
@@ -172,7 +177,7 @@ router.post("/save-checkout", async (req, res) => {
 			// Create a new checkout document with the fixed email
 			const newCheckout = new Checkout({
 				userId,
-				email: existingCheckout.email, // Use existing email
+				email, // Use existing email
 				firstName,
 				lastName,
 				address,

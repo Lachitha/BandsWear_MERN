@@ -61,29 +61,29 @@ function UpdateAdmin() {
               <img className="w-40 h-60 object-cover rounded-md" src={itemData.imgUrl || dressImage} alt="Product" /> {/* Use the uploaded image URL */}
             </div>
             <div className="flex-1">
-              {/* Item Name */}
+              {/* Item Name (Read-only) */}
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2 font-medium">Item Name</label>
                 <input
                   type="text"
                   name="itemName"
                   value={itemData.itemName}
-                  onChange={handleInputChange}
-                  className="w-[20rem] p-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600"
+                  readOnly
+                  className="w-[20rem] p-2 border border-gray-300 rounded-xl bg-gray-100 focus:outline-none cursor-not-allowed"
                 />
               </div>
-              {/* Category */}
+              {/* Category (Read-only) */}
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2 font-medium">Category</label>
                 <input
                   type="text"
                   name="category"
                   value={itemData.category}
-                  onChange={handleInputChange}
-                  className="w-[20rem] p-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600"
+                  readOnly
+                  className="w-[20rem] p-2 border border-gray-300 rounded-xl bg-gray-100 focus:outline-none cursor-not-allowed"
                 />
               </div>
-              {/* Price */}
+              {/* Price (Editable) */}
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2 font-medium">Price</label>
                 <input
@@ -94,16 +94,15 @@ function UpdateAdmin() {
                   className="w-[20rem] p-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600"
                 />
               </div>
-              {/* Image URL */}
+              {/* Image URL (Read-only) */}
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2 font-medium">Image URL</label>
                 <input
                   type="text"
                   name="imgUrl"
                   value={itemData.imgUrl}
-                  onChange={handleInputChange}
-                  className="w-[20rem] p-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  placeholder="Enter image URL"
+                  readOnly
+                  className="w-[20rem] p-2 border border-gray-300 rounded-xl bg-gray-100 focus:outline-none cursor-not-allowed"
                 />
               </div>
               {/* Sizes */}

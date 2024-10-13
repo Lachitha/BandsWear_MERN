@@ -2,7 +2,10 @@ const mongoose = require('mongoose');
 
 // Define the schema for the Item
 const itemSchema = new mongoose.Schema({
-  category: String,
+  category: {
+    type: String,
+    required: true // Corrected this part
+  },
   size: String,
   price: Number,
   itemName: String,
@@ -16,7 +19,7 @@ const itemSchema = new mongoose.Schema({
   small: Number,
   extraLarge: Number,
   medium: Number,
-
+  CompanyName: String ,
 }, { timestamps: true });
 
 // Create the Item model

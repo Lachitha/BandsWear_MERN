@@ -23,11 +23,7 @@ const OrderSchema = new mongoose.Schema({
       type: Number,
       default: 0,
     },
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
+    
     itemName: {
       type: String,
       required: true,
@@ -38,11 +34,7 @@ const OrderSchema = new mongoose.Schema({
       required: true,
       unique: true,
       trim: true,
-    },
-    availability: {
-      type: String,
-      required: true,
-      enum: ["Available", "Unavailable"],
+    
     },
     imageURL: {
       type: String,
@@ -52,6 +44,11 @@ const OrderSchema = new mongoose.Schema({
       type: Number,
       required: true, // Set this to true if you want it to be required
       min: 1, // Optionally set a minimum value if you want to enforce at least one
+    },
+    
+    neededDate: {
+        type: Date,
+        required: true,  // Ensure that the needed date is provided
     },
 }, { timestamps: true });
 

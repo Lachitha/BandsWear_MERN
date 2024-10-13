@@ -18,6 +18,10 @@ function UserProfile() {
     contactNumber: '',
     address: ''
   });
+  const [errors, setErrors] = useState({
+    username: '',
+    contactNumber: ''
+  });
 
   useEffect(() => {
     axios.get(`http://localhost:3001/showUserById/${userId}`)
@@ -40,6 +44,26 @@ function UserProfile() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUpdatedData({ ...updatedData, [name]: value });
+
+    // Username validation
+    if (name === 'username') {
+      if (/[^a-zA-Z\s]/.test(value)) {
+        setErrors({ ...errors, username: 'Username can only contain letters and spaces' });
+      } else {
+        setErrors({ ...errors, username: '' });
+      }
+    }
+
+    // Contact number validation
+    if (name === 'contactNumber') {
+      if (!/^\d+$/.test(value)) {
+        setErrors({ ...errors, contactNumber: 'Contact number can only contain digits' });
+      } else if (value.length !== 10) {
+        setErrors({ ...errors, contactNumber: 'Contact number must be exactly 10 digits' });
+      } else {
+        setErrors({ ...errors, contactNumber: '' });
+      }
+    }
   };
 
   const handlePasswordCheck = (e) => {
@@ -50,6 +74,10 @@ function UserProfile() {
     e.preventDefault();
     if (passwordCheck !== userData.password) {
       setErrorMessage('Previous password does not match.');
+      return;
+    }
+    if (errors.username || errors.contactNumber) {
+      setErrorMessage('Form has errors.');
       return;
     }
 
@@ -99,6 +127,9 @@ function UserProfile() {
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            {errors.username && (
+              <p className="text-red-500 mt-2">{errors.username}</p>
+            )}
           </div>
 
           <div>
@@ -142,6 +173,9 @@ function UserProfile() {
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            {errors.contactNumber && (
+              <p className="text-red-500 mt-2">{errors.contactNumber}</p>
+            )}
           </div>
 
           <div>
@@ -159,6 +193,7 @@ function UserProfile() {
             <button
               type="submit"
               className="bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-700"
+              disabled={!!errors.username || !!errors.contactNumber} // Disable button if there is an error with username or contact number
             >
               Update User
             </button>

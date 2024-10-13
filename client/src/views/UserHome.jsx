@@ -85,7 +85,7 @@ const UserHome = () => {
 
                 <h2 className="text-xl font-semibold text-purple-800 mb-2 pt-4">{item.itemName} - {item.itemCode}</h2>
                 <p className="text-gray-600">Category: {item.category}</p>
-                <p className="text-purple-800 font-bold text-xl p-4">Rs: {item.price}.00</p>
+                <p className="text-purple-800 font-bold text-xl p-4">LKR: {item.price}.00</p>
               </div>
             </Link>
           ))}

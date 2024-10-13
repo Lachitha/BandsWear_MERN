@@ -13,6 +13,7 @@ const ITEM = require("./controllers/AdminAddController");
 const USER = require("./controllers/UserController");
 const CART = require("./controllers/CartController");
 const ORDER = require("./controllers/AdminOrder");
+const ACCEPT = require('./controllers/SupAcceptOrder');
 const CheckoutController = require("./controllers/CheckoutController");
 
 // Middleware
@@ -51,6 +52,7 @@ app.use("/", ITEM);
 app.use("/", USER);
 app.use("/", CART);
 app.use("/", ORDER);
+app.use('/', ACCEPT);
 app.use("/api/checkout", CheckoutController);
 
 // Connect to the database

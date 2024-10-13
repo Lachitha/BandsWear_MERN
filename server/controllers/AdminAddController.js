@@ -3,10 +3,23 @@ const router = express.Router();
 const Item = require('../models/AdminAdd');
 
 // Route to add an item
-router.post("/AddItem", (req, res) => {
-  Item.create(req.body)
-    .then(item => res.json(item))
-    .catch(err => res.status(500).json(err));
+router.post("/AddItem", async (req, res) => {
+  try {
+    const { itemCode } = req.body;
+
+    // Check if an item with the same code already exists
+    const existingItem = await Item.findOne({ itemCode });
+
+    if (existingItem) {
+      return res.status(400).json({ message: "Item code already exists!" });
+    }
+
+    // If not, create the new item
+    const newItem = await Item.create(req.body);
+    res.status(201).json(newItem);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Route to show all products (items)
@@ -30,17 +43,32 @@ router.get("/showCustomerById/:itemId", (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 //Update Admin Items
-router.put("/updateItem/:itemId", (req, res) => {
-  const itemId = req.params.itemId;
-  Item.findByIdAndUpdate(itemId, req.body, { new: true })  // Update item and return the new version
-    .then(updatedItem => {
-      if (!updatedItem) {
-        return res.status(404).json({ error: "Item not found" });
-      }
-      res.json(updatedItem);
-    })
-    .catch(err => res.status(500).json(err));
+// Route to update item quantity in inventory
+router.put("/updateInventory/:itemId", async (req, res) => {
+  try {
+    const { quantity } = req.body; // New quantity to add
+    const item = await Item.findById(req.params.itemId);
+
+    if (!item) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+
+    // Calculate the new quantity
+    const newQuantity = item.quantity + quantity;
+
+    // Update the item with the new quantity
+    const updatedItem = await Item.findByIdAndUpdate(
+      req.params.itemId,
+      { quantity: newQuantity },
+      { new: true }
+    );
+
+    res.json(updatedItem);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update inventory", details: err });
+  }
 });
+
 
 // Route to delete an item
 router.delete("/deleteItem/:itemId", (req, res) => {
