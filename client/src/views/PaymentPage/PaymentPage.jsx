@@ -39,9 +39,9 @@ const PaymentPage = () => {
 		setErrorMessage(""); // Reset error message
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		setErrorMessage(""); // Clear any existing error message
+		setErrorMessage("");
 
 		if (!paymentMethod) {
 			setErrorMessage("Please select a payment method.");
@@ -50,17 +50,14 @@ const PaymentPage = () => {
 
 		if (paymentMethod === PAYMENT_METHODS.BANK_CARD) {
 			if (cardType === CARD_TYPES.VISA || cardType === CARD_TYPES.MASTERCARD) {
-				// Redirect to the card details page
 				window.location.href = "http://localhost:5173/cardDetails";
 			} else {
 				setErrorMessage("Please select a card type (Visa/MasterCard).");
 			}
 		} else if (paymentMethod === PAYMENT_METHODS.PAYPAL) {
-			// Redirect to PayPal
 			window.location.href = "https://www.paypal.com/signin";
 		} else if (paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY) {
-			// Show success popup for Cash on Delivery
-			Swal.fire({
+			const result = await Swal.fire({
 				title: "Order Successful!",
 				text: "Your order has been placed successfully. The payment will be collected upon delivery.",
 				icon: "success",
@@ -75,6 +72,9 @@ const PaymentPage = () => {
 					popup: "animate__animated animate__fadeOutUp",
 				},
 			});
+			if (result.isConfirmed) {
+				window.location.href = "http://localhost:5173/order";
+			}
 		} else {
 			setErrorMessage("Please select a valid payment method.");
 		}
