@@ -5,7 +5,8 @@ const Checkout = require("../models/Checkout");
 const Card = require("../models/Card");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
-
+const nodemailer = require("nodemailer");
+const multer = require("multer");
 // Register a new user
 router.post("/register", async (req, res) => {
 	const {
@@ -347,4 +348,115 @@ router.post("/order", async (req, res) => {
 			.json({ message: "Failed to create order", error: error.message });
 	}
 });
+
+const transporter = nodemailer.createTransport({
+	service: "Gmail",
+	auth: {
+		user: "brandswear001@gmail.com",
+		pass: "excurnnsfcamygkp",
+	},
+});
+
+router.post("/sendEmail", async (req, res) => {
+	const { email, orderId, totalPrice, products } = req.body;
+
+	// Validate required fields
+	if (!email || !orderId || !totalPrice || !products || products.length === 0) {
+		return res.status(400).json({ message: "Missing required fields." });
+	}
+
+	// Generate the product list HTML for the email body
+	const productList = products
+		.map(
+			(product) =>
+				`<li>${product.itemName} - ${product.quantity} x Rs ${
+					product.unitPrice
+				} = Rs ${product.quantity * product.unitPrice}</li>`
+		)
+		.join("");
+
+	// Mail options
+	const mailOptions = {
+		from: "brandswear001@gmail.com", // Use environment variable for sender email
+		to: email, // Send to the user's email
+		subject: `Order Confirmation - Order ID: ${orderId}`,
+		html: `
+			<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="UTF-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>Order Confirmation</title>
+				<style>
+					body {
+						font-family: Arial, sans-serif;
+						background-color: #f4f4f4;
+						color: #333;
+						margin: 0;
+						padding: 0;
+					}
+					.container {
+						width: 80%;
+						margin: auto;
+						padding: 20px;
+						background: white;
+						border-radius: 8px;
+						box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+					}
+					h1 {
+						color: #4CAF50;
+					}
+					p {
+						line-height: 1.5;
+					}
+					.product-list {
+						list-style-type: none;
+						padding: 0;
+					}
+					.product-list li {
+						background: #f9f9f9;
+						margin: 5px 0;
+						padding: 10px;
+						border-radius: 4px;
+						box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+					}
+					.total-price {
+						font-weight: bold;
+						color: #4CAF50;
+					}
+					.footer {
+						margin-top: 20px;
+						font-size: 0.9em;
+						color: #777;
+					}
+				</style>
+			</head>
+			<body>
+				<div class="container">
+					<h1>Order Confirmation: ${orderId}</h1>
+					<p>Thank you for your purchase! Here are your order details:</p>
+					<ul class="product-list">${productList}</ul>
+					<p class="total-price">Total Price: Rs ${totalPrice}</p>
+					<p>If you have any questions, feel free to contact us!</p>
+					<div class="footer">
+						<p>Best regards,<br>BRANDS WEAR (PVT)LTD</p>
+					</div>
+				</div>
+			</body>
+			</html>
+		`,
+	};
+
+	try {
+		// Send email
+		await transporter.sendMail(mailOptions);
+		res.status(200).send("Email sent");
+	} catch (error) {
+		console.error("Error sending email:", error);
+		res
+			.status(500)
+			.json({ message: "Failed to send email", error: error.message });
+	}
+});
+
 module.exports = router;

@@ -53,18 +53,18 @@ router.post("/loginc", async (req, res) => {
 			if (password === user.password) {
 				// Plain-text password comparison
 				req.session.userId = user._id; // Set session user ID
-				req.session.username = user.username; // Save username in session
+				req.session.username = user.username;
+				req.session.username = user.email;
 				req.session.userRole = "user"; // Store role for additional checks
 				console.log(
 					`User login successful. UserID stored in session: ${req.session.username}`
 				);
-				return res
-					.status(203)
-					.json({
-						message: "User login successful",
-						userId: user._id,
-						username: user.username,
-					});
+				return res.status(203).json({
+					message: "User login successful",
+					userId: user._id,
+					username: user.username,
+					email: user.email,
+				});
 			} else {
 				return res.status(401).json({ message: "Invalid user credentials" });
 			}

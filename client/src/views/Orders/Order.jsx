@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import Navigation from "../Navigate";
-import backgroundimg from "../img/frockbg.jpg"; 
+import backgroundimg from "../img/frockbg.jpg";
 const Orders = () => {
 	const [orders, setOrders] = useState([]);
 	const [error, setError] = useState(null);
@@ -153,6 +153,86 @@ const Orders = () => {
 
 		doc.save(`invoice_${order._id}.pdf`);
 	};
+
+	const sendEmail = async (order) => {
+		const { _id, totalPrice, products } = order; // Extract userEmail from order
+		const userEmail = sessionStorage.getItem("email");
+		if (!userEmail) {
+			alert("User email is not available.");
+			return;
+		}
+
+		try {
+			const response = await fetch(
+				"http://localhost:3001/api/checkout/sendEmail",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						email: userEmail, // Use the userEmail extracted from the order
+						orderId: _id,
+						totalPrice,
+						products,
+					}),
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error("Failed to send email");
+			}
+
+			alert("Email sent successfully!");
+		} catch (err) {
+			console.error(err);
+			alert("Error sending email: " + err.message);
+		}
+	};
+
+	// In the orders.map, make sure to pass the complete order object
+	{
+		orders.map((order) => (
+			<div
+				key={order._id}
+				style={{
+					marginBottom: "20px",
+					border: "1px solid #ddd",
+					borderRadius: "10px",
+					padding: "20px",
+					boxShadow: "0 4px 8px rgba(0, 0, 0, 0.8)",
+					backgroundColor: "#fff",
+					width: "calc(100% - 10px)",
+				}}>
+				<h5
+					style={{
+						margin: "0 0 10px 0",
+						color: "#333",
+						fontSize: "18px",
+					}}>
+					Order ID: {order._id}
+				</h5>
+				{/* Other order details */}
+				<div style={{ textAlign: "right" }}>
+					<button
+						style={{
+							padding: "10px 15px",
+							backgroundColor: "#6c63ff",
+							color: "#fff",
+							border: "none",
+							borderRadius: "5px",
+							cursor: "pointer",
+							transition: "background-color 0.3s",
+						}}
+						onClick={() => sendEmail(order)} // Ensure order is passed correctly
+					>
+						Payment Confirmation
+					</button>
+					{/* Other buttons */}
+				</div>
+			</div>
+		));
+	}
 
 	if (loading) {
 		return <div>Loading orders...</div>;
@@ -317,8 +397,10 @@ const Orders = () => {
 										}
 										onMouseLeave={(e) =>
 											(e.target.style.backgroundColor = "#6c63ff")
-										}>
-										Payment Confirmation
+										}
+										onClick={() => sendEmail(order)} // Call sendEmail on click
+									>
+										Order Confirmation
 									</button>
 									<br />
 									<button

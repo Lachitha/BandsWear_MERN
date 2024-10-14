@@ -33,7 +33,8 @@ function Login() {
 			} else if (response.status === 203) {
 				sessionStorage.setItem("userId", response.data.userId);
 				sessionStorage.setItem("username", response.data.username);
-				console.log("Retrieved username:", response.data.userId);
+				sessionStorage.setItem("email", response.data.email);
+				console.log("Retrieved username:", response.data.email);
 				// Navigate to user home page with the user ID
 				navigate(`/userHome/${response.data.userId}`);
 			} else {

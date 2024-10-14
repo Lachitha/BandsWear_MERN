@@ -24,6 +24,7 @@ const PaymentForm = () => {
 	const [loading, setLoading] = useState(false);
 	const [selectedCardId, setSelectedCardId] = useState(null);
 	const [isEditing, setIsEditing] = useState(false);
+	const [searchQuery, setSearchQuery] = useState(""); // Add search query state
 
 	const fetchSavedCards = useCallback(async () => {
 		if (!userId) return;
@@ -68,6 +69,11 @@ const PaymentForm = () => {
 		});
 	};
 
+	const validateCardName = (name) => {
+		const regex = /^[a-zA-Z]+$/;
+		return regex.test(name);
+	};
+
 	const validateCardNumber = (number) => {
 		const regex = /^\d{16}$/;
 		return regex.test(number);
@@ -91,14 +97,21 @@ const PaymentForm = () => {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
+		if (!validateCardName(formData.cardName)) {
+			alert("Invalid card name. Please enter a valid name.");
+			return;
+		}
+
 		if (!validateCardNumber(formData.cardNumber)) {
 			alert("Invalid card number. Please enter a valid 16-digit card number.");
 			return;
 		}
+
 		if (!validateCVV(formData.cvv)) {
 			alert("Invalid CVV. Please enter a valid CVV.");
 			return;
 		}
+
 		if (
 			!validateExpiration(
 				parseInt(formData.expMonth),
@@ -138,9 +151,8 @@ const PaymentForm = () => {
 					"Your card has been added successfully.",
 					"success"
 				);
-			}
+			} // Reset form and state
 
-			// Reset form and state
 			setFormData({
 				cardName: "",
 				cardNumber: "",
@@ -320,16 +332,45 @@ const PaymentForm = () => {
 			backgroundColor: "#fff",
 			zIndex: 1000,
 		},
+		searchInput: {
+			width: "100%",
+			padding: "10px",
+			marginBottom: "10px",
+			borderRadius: "4px",
+			border: "1px solid #ccc",
+			boxSizing: "border-box",
+		},
 	};
+
+	const handleSearch = (e) => {
+		setSearchQuery(e.target.value);
+	};
+
+	const filteredCards = savedCards.filter((card) => {
+		const cardName = card.cardName.toLowerCase();
+		const cardNumber = card.cardNumber.toLowerCase();
+		const searchQueryLower = searchQuery.toLowerCase();
+
+		return (
+			cardName.includes(searchQueryLower) ||
+			cardNumber.includes(searchQueryLower)
+		);
+	});
 
 	return (
 		<div style={styles.header}>
+			      
 			<Navigation />
+			      
 			<div style={styles.container}>
+				        
 				<div style={styles.innerContainer}>
+					          
 					<div style={styles.paymentForm}>
-						<h2>Payment Form</h2>
+						            <h2>Payment Form</h2>
+						            
 						<form onSubmit={handleSubmit}>
+							              
 							<input
 								type="text"
 								name="cardName"
@@ -339,6 +380,7 @@ const PaymentForm = () => {
 								style={styles.input}
 								required
 							/>
+							              
 							<input
 								type="text"
 								name="cardNumber"
@@ -349,34 +391,45 @@ const PaymentForm = () => {
 								maxLength="16"
 								required
 							/>
+							              
 							<div style={styles.dropdownContainer}>
+								                
 								<select
 									name="expMonth"
 									value={formData.expMonth}
 									onChange={handleChange}
 									style={{ ...styles.input, ...styles.dropdown }}
 									required>
-									<option value="">Month</option>
+									                  <option value="">Month</option>
+									                  
 									{Array.from({ length: 12 }, (_, i) => (
 										<option key={i} value={i + 1}>
-											{i + 1}
+											                      {i + 1}
+											                    
 										</option>
 									))}
+									                
 								</select>
+								                
 								<select
 									name="expYear"
 									value={formData.expYear}
 									onChange={handleChange}
 									style={{ ...styles.input, ...styles.dropdown }}
 									required>
-									<option value="">Year</option>
+									                  <option value="">Year</option>
+									                  
 									{futureYears.map((year) => (
 										<option key={year} value={year}>
-											{year}
+											                      {year}
+											                    
 										</option>
 									))}
+									                
 								</select>
+								              
 							</div>
+							              
 							<input
 								type="text"
 								name="cvv"
@@ -387,27 +440,43 @@ const PaymentForm = () => {
 								maxLength="4"
 								required
 							/>
+							              
 							{/* <label>
-							<input
-								type="checkbox"
-								name="savePaymentDetails"
-								checked={formData.savePaymentDetails}
-								onChange={handleChange}
-							/>
-							Save this card for future payments
-						</label> */}
+                <input
+                  type="checkbox"
+                  name="savePaymentDetails"
+                  checked={formData.savePaymentDetails}
+                  onChange={handleChange}
+                />
+                Save this card for future payments
+              </label> */}
+							              
 							<button type="submit" style={styles.button}>
-								{isEditing ? "Update Card" : "Save Card"}
+								                {isEditing ? "Update Card" : "Save Card"}
+								              
 							</button>
+							            
 						</form>
+						          
 					</div>
+					          
 					<div style={styles.cardListContainer}>
-						<h2>Saved Cards</h2>
+						            <h2>Saved Cards</h2>
+						            
+						<input
+							type="text"
+							placeholder="Search by card name or number"
+							value={searchQuery}
+							onChange={handleSearch}
+							style={styles.searchInput}
+						/>
+						            
 						{loading ? (
 							<p>Loading...</p>
 						) : (
 							<ul style={{ listStyle: "none", padding: 0 }}>
-								{savedCards.map((card) => (
+								                
+								{filteredCards.map((card) => (
 									<li
 										key={card._id}
 										style={{
@@ -418,43 +487,63 @@ const PaymentForm = () => {
 										}}
 										onClick={() => setSelectedCardId(card._id)} // Set selected card on click
 									>
+										                    
 										<div style={styles.cardItemHeader}>
-											<strong>{card.cardName}</strong>
+											                      <strong>{card.cardName}</strong>
+											                      
 											<div>
+												                        
 												<button
 													onClick={(e) => {
 														e.stopPropagation(); // Prevent triggering the parent onClick
 														handleEdit(card);
 													}}
 													style={{ ...styles.button, ...styles.editButton }}>
-													Edit
+													                          Edit
+													                        
 												</button>
+												                        
 												<button
 													onClick={(e) => {
 														e.stopPropagation(); // Prevent triggering the parent onClick
 														handleDelete(card._id);
 													}}
 													style={{ ...styles.button, ...styles.deleteButton }}>
-													Delete
+													                          Delete
+													                        
 												</button>
+												                      
 											</div>
+											                    
 										</div>
+										                    
 										<div style={styles.cardItemDetails}>
-											<strong>Card Number:</strong> **** **** ****{" "}
+											                      <strong>Card Number:</strong> ****
+											**** ****                       
 											{card.cardNumber.slice(-4)}
+											                      
 											<br />
-											<strong>Expiry:</strong> {card.expMonth}/{card.expYear}
+											                      <strong>Expiry:</strong>{" "}
+											{card.expMonth}/{card.expYear}
+											                    
 										</div>
+										                  
 									</li>
 								))}
+								              
 							</ul>
 						)}
+						            
 						<button onClick={handleProceedToPay} style={styles.button}>
-							Proceed to Pay
+							              Proceed to Pay             
 						</button>
+						          
 					</div>
+					        
 				</div>
+				      
 			</div>
+			    
 		</div>
 	);
 };
